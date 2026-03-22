@@ -372,19 +372,19 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
 
                 {/* Browser Content */}
                 <div className="flex-1 relative bg-[#161022]">
-                  {data.browserContent.backgroundImage && (
+                  {(data.browserContent?.backgroundImage || data.images?.main) && (
                     <>
                       <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_50%_50%,_#590df2_0%,_transparent_70%)]"></div>
                       <img 
                         className="w-full h-full object-cover mix-blend-overlay" 
                         alt={`${data.projectName} interface`}
-                        src={data.browserContent.backgroundImage}
+                        src={data.browserContent?.backgroundImage || data.images?.main}
                       />
                     </>
                   )}
 
                   {/* Render overlay elements */}
-                  {data.browserContent.overlayElements?.map((element: any, index: number) => (
+                  {data.browserContent?.overlayElements?.map((element: any, index: number) => (
                     <div key={index} className="absolute inset-0 p-8 flex flex-col justify-end">
                       <div className="glass-card p-6 rounded-xl max-w-md">
                         <div className="flex items-center gap-3 mb-2">
@@ -403,7 +403,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
                   ))}
 
                   {/* Render floating cards */}
-                  {data.browserContent.floatingCards?.map((card: any, index: number) => (
+                  {data.browserContent?.floatingCards?.map((card: any, index: number) => (
                     <motion.div
                       key={index}
                       className={`absolute ${card.position === 'right' ? '-right-6 top-20' : '-left-6 bottom-20'} glass-card p-5 rounded-xl border-primary/30 ${card.position === 'right' ? 'w-64' : 'w-56'}`}

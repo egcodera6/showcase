@@ -52,6 +52,15 @@ const normalizeProjectForSave = (project: ProjectFormData): ProjectFormData => {
     }
   }
 
+  if (normalized.type === 'browser-mockup') {
+    normalized.data = normalized.data || {};
+    normalized.data.browserContent = normalized.data.browserContent || {
+      backgroundImage: normalized.data.images?.main || '',
+      overlayElements: [],
+      floatingCards: []
+    };
+  }
+
   return normalized;
 };
 
