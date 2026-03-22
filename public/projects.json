@@ -1,0 +1,102 @@
+{
+  "projects": [
+    {
+      "id": "cover",
+      "title": "Cover",
+      "type": "cover",
+      "data": {}
+    },
+    {
+      "id": "physiosim-overview",
+      "title": "Physiosim Overview",
+      "type": "browser-mockup",
+      "data": {
+        "projectName": "Physiosim",
+        "subtitle": "Physiotherapy Simulation Platform",
+        "description": "A high-fidelity simulation platform designed for physiotherapy students and professionals to practice clinical reasoning in a risk-free, data-driven environment.",
+        "problem": "Traditional physiotherapy training requires physical patient interaction, limiting practice opportunities and creating risk for patients.",
+        "solution": "Created a virtual simulation platform with realistic biomechanics, allowing unlimited practice scenarios without patient risk.",
+        "techStack": ["React", "TypeScript", "Three.js", "WebGL", "Node.js", "PostgreSQL"],
+        "features": [
+          "Real-time patient feedback loops",
+          "Advanced biomechanical modeling",
+          "Interactive clinical case studies"
+        ],
+        "stats": {
+          "users": "2,500+",
+          "cases": "150+",
+          "universities": "45"
+        },
+        "status": "live",
+        "url": "app.physiosim.io",
+        "images": {
+          "main": "https://lh3.googleusercontent.com/aida-public/AB6AXuAwiRSWmGcUb_n2Hkf9oQuadmFxhnb7wRn1msRip88jYgo0sxF_NbZSibTqE3qBe0WUmN3uLvMa9VQSpXYAFp51rafdU_vM4aCWULHpNN7Ig8g-DhCM_NsFCEYDhY7d5qiGgaRX5QIexIg8jB790qWkPwjvU_s7TTLCwtKdnAAU9ByFiQgFAtCtojvZuu55urz64Ppgxi2mCHAeoipRbvHHmjWgS3O8DW0rFqcvW-7Co4KkaXJpc2uEI5uIYptjXc2I8SdtoIBr7t4"
+        }
+      }
+    },
+    {
+      "id": "physiosim-details",
+      "title": "Physiosim Details",
+      "type": "project-details",
+      "data": {
+        "projectName": "Physiosim",
+        "headerTitle": "Physiosim Details",
+        "description": "A deep dive into the next-gen physiotherapy simulation platform. Bridging clinical expertise with immersive technology.",
+        "problem": "Medical students need hands-on practice but real patient interactions are limited and risky for beginners.",
+        "solution": "Built an immersive 3D simulation with accurate biomechanics, AI-driven patient responses, and comprehensive analytics.",
+        "techStack": ["React", "TypeScript", "Three.js", "WebGL", "TensorFlow.js", "Node.js"],
+        "platform": "Web / VR / Mobile",
+        "status": "Live Beta",
+        "version": "v2.0",
+        "tags": ["Design", "Healthcare", "Education"],
+        "images": {
+          "main": "https://lh3.googleusercontent.com/aida-public/AB6AXuC-HSSFcLiqmAd8gdCM0zqQAnuQb6G2VnwIV-W6DN7zvKqyoz4eZRHz8dx969yLPLjQBalPjFATzv7o1JOTvfLoQyOddq-rD9OQHM7N78fCG_b01KMSpjW5NyAgLzn3O51184k7s0aarGcpPhsQON9ZTPcNJmCgTKLKDTNak3XqI7UXdUl8wQQC8wcBD9GNpqZ3-02dV_Sixwb6rqt_vyKVs7RmkNMNOKIKNnKmdNHythB6_LU6p95kf5RsEGH-CRzrGpYys5AtUzU",
+          "secondary": "https://lh3.googleusercontent.com/aida-public/AB6AXuB2RLPIC6uplD97PcFiAerLYxPbOXyK2Xmc8S0C0BsTGMtbPad2BCIQFn-E3TJ74wj8d_r80H_y6DwfqAkpw5BiZprDMiaZQzo-mvodLylJxU5oO0d95_oudlO4MlucZum922mbcUKwVoqNsNVeCl_FllFqMwVQ_KCQuTrkFeZEkIiBvrjgCff_HBZlgWz_25dOk3FyFU0FJqvkvdAdCv8QeMbY-DTjyo-6nKY4M93L6Qh91eS6wQRLzltArVd6kTrnJty-foviPOg"
+        }
+      }
+    },
+    {
+      "id": "focus-overview",
+      "title": "Focus Overview",
+      "type": "browser-mockup",
+      "data": {
+        "projectName": "Focus",
+        "subtitle": "Productivity Web App",
+        "description": "A streamlined interface designed to eliminate distractions and boost deep work efficiency for modern tech teams.",
+        "problem": "Developers and teams struggle with constant distractions, context switching, and lack of productivity insights.",
+        "solution": "Created an all-in-one productivity platform with distraction blocking, time tracking, and team synchronization.",
+        "techStack": ["Next.js", "TypeScript", "TailwindCSS", "PostgreSQL", "Redis", "WebSockets"],
+        "features": [
+          "AI-powered task prioritization",
+          "Deep work timer with customizable cycles",
+          "Team sync and status visibility"
+        ],
+        "stats": {
+          "users": "10,000+",
+          "teams": "500+",
+          "productivityGain": "35%"
+        },
+        "status": "beta",
+        "url": "focus-app.io/dashboard",
+        "images": {
+          "main": "https://lh3.googleusercontent.com/aida-public/AB6AXuAHh59QwZ-p67S-y-VgwfcBffSlicm9C_Pbd2W1o2IxcczPwRbQ5Coou4RJdho6v04d3u84-eESGOmlElw2-3pQd6YpUYOGXa74ofKZw9Y5_X_JWKqc7QhwpVyJv5YKxZiYLK6-zIau86jMEQHYrVtJWiaHKJH3ZuqV-g4ACFJzNR2WTCqfqKk-DXyN3Ra7125xH6kG7DrjOIbX7USFZZs_d6DL-G-osccApyNVNmAJQ57zhlcbx6rkQAxQaXQFY41jlCSOn8Wx-PM"
+        }
+      }
+    },
+    {
+      "id": "call-to-action",
+      "title": "Call to Action",
+      "type": "cta",
+      "data": {
+        "headline": "Need a website like this?",
+        "subheadline": "Let's build your future with custom high-performance web solutions for tech-forward brands.",
+        "email": "hello@techagency.design",
+        "website": "www.techagency.design",
+        "buttons": [
+          { "text": "Get Started", "primary": true },
+          { "text": "View Portfolio", "primary": false }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "projects": [
+    {
+      "id": "physiosim",
+      "title": "Physiosim Overview",
+      "type": "browser-mockup",
+      "data": {
+        "projectName": "Physiosim",
+        "subtitle": "Physiotherapy Simulation Platform",
+        "status": "live",
+        "url": "app.physiosim.io",
+        "description": "A high-fidelity simulation platform designed for physiotherapy students and professionals to practice clinical reasoning in a risk-free, data-driven environment.",
+        "features": [
+          "Real-time patient feedback loops",
+          "Advanced biomechanical modeling", 
+          "Interactive clinical case studies"
+        ],
+        "browserContent": {
+          "backgroundImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuAwiRSWmGcUb_n2Hkf9oQuadmFxhnb7wRn1msRip88jYgo0sxF_NbZSibTqE3qBe0WUmN3uLvMa9VQSpXYAFp51rafdU_vM4aCWULHpNN7Ig8g-DhCM_NsFCEYDhY7d5qiGgaRX5QIexIg8jB790qWkPwjvU_s7TTLCwtKdnAAU9ByFiQgFAtCtojvZuu55urz64Ppgxi2mCHAeoipRbvHHmjWgS3O8DW0rFqcvW-7Co4KkaXJpc2uEI5uIYptjXc2I8SdtoIBr7t4",
+          "overlayElements": [
+            {
+              "type": "progress-bar",
+              "label": "Real-time Kinematics",
+              "value": 75,
+              "maxValue": 100,
+              "unit": "%",
+              "description": "Joint Alignment"
+            }
+          ],
+          "floatingCards": [
+            {
+              "position": "right",
+              "title": "Clinical Case",
+              "subtitle": "Spinal Rehabilitation",
+              "icon": "clinical_notes",
+              "content": ["progress-bars", 2]
+            },
+            {
+              "position": "left", 
+              "title": "Active Users",
+              "type": "user-avatars",
+              "content": ["JD", "SK", "+12"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "physiosim-details",
+      "title": "Physiosim Details", 
+      "type": "project-details",
+      "data": {
+        "headerTitle": "Physiosim Details",
+        "description": "A deep dive into the next-gen physiotherapy simulation platform. Bridging clinical expertise with immersive technology.",
+        "mainContent": {
+          "type": "screenshot",
+          "title": "Homepage Overview",
+          "subtitle": "Interface",
+          "description": "Intuitive dashboard designed for practitioner workflow efficiency and patient progress visualization.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuC-HSSFcLiqmAd8gdCM0zqQAnuQb6G2VnwIV-W6DN7zvKqyoz4eZRHz8dx969yLPLjQBalPjFATzv7o1JOTvfLoQyOddq-rD9OQHM7N78fCG_b01KMSpjW5NyAgLzn3O51184k7s0aarGcpPhsQON9ZTPcNJmCgTKLKDTNak3XqI7UXdUl8wQQC8wcBD9GNpqZ3-02dV_Sixwb6rqt_vyKVs7RmkNMNOKIKNnKmdNHythB6_LU6p95kf5RsEGH-CRzrGpYys5AtUzU"
+        },
+        "sideContent": {
+          "type": "ui-highlight",
+          "title": "UI System Highlight", 
+          "description": "A custom component library built for accessibility and high-performance rendering.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuB2RLPIC6uplD97PcFiAerLYxPbOXyK2Xmc8S0C0BsTGMtbPad2BCIQFn-E3TJ74wj8d_r80H_y6DwfqAkpw5BiZprDMiaZQzo-mvodLylJxU5oO0d95_oudlO4MlucZum922mbcUKwVoqNsNVeCl_FllFqMwVQ_KCQuTrkFeZEkIiBvrjgCff_HBZlgWz_25dOk3FyFU0FJqvkvdAdCv8QeMbY-DTjyo-6nKY4M93L6Qh91eS6wQRLzltArVd6kTrnJty-foviPOg"
+        },
+        "features": [
+          {
+            "icon": "analytics",
+            "title": "Real-time Tracking",
+            "description": "Advanced motion sensors Integration."
+          },
+          {
+            "icon": "memory", 
+            "title": "AI Diagnostics",
+            "description": "Automated injury assessment."
+          }
+        ],
+        "metadata": {
+          "platform": "Web / VR / Mobile",
+          "status": "Live Beta",
+          "tags": ["Design", "Healthcare", "v2.0"]
+        }
+      }
+    },
+    {
+      "id": "focus",
+      "title": "Focus Overview",
+      "type": "browser-mockup",
+      "data": {
+        "projectName": "Focus",
+        "subtitle": "Productivity Web App", 
+        "status": "beta",
+        "url": "focus-app.io/dashboard",
+        "description": "A streamlined interface designed to eliminate distractions and boost deep work efficiency for modern tech teams.",
+        "browserContent": {
+          "backgroundStyle": "radial-gradient(circle_at_50%_50%,_#590df2_0%,_transparent_70%)",
+          "navbar": {
+            "logo": "wave",
+            "brandName": "Focus",
+            "links": ["Features", "Pricing", "About"],
+            "ctaButton": "Sign Up",
+            "userAvatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuAHh59QwZ-p67S-y-VgwfcBffSlicm9C_Pbd2W1o2IxcczPwRbQ5Coou4RJdho6v04d3u84-eESGOmlElw2-3pQd6YpUYOGXa74ofKZw9Y5_X_JWKqc7QhwpVyJv5YKxZiYLK6-zIau86jMEQHYrVtJWiaHKJH3ZuqV-g4ACFJzNR2WTCqfqKk-DXyN3Ra7125xH6kG7DrjOIbX7USFZZs_d6DL-G-osccApyNVNmAJQ57zhlcbx6rkQAxQaXQFY41jlCSOn8Wx-PM"
+          },
+          "dashboard": {
+            "mainContent": {
+              "title": "Daily Deep Work",
+              "timer": "45:00",
+              "progressBars": [75, 50, 67]
+            },
+            "sidebar": [
+              {
+                "type": "upcoming",
+                "title": "UPCOMING",
+                "content": "Team Sync",
+                "time": "10:30 AM"
+              },
+              {
+                "type": "productivity",
+                "title": "PRODUCTIVITY", 
+                "content": "Current: 92%",
+                "progress": 92
+              }
+            ]
+          }
+        },
+        "highlights": [
+          {
+            "icon": "bolt",
+            "title": "Task Engine",
+            "description": "AI-powered prioritization to focus on what matters.",
+            "feature": "Smart Sorting"
+          },
+          {
+            "icon": "timer",
+            "title": "Deep Work Timer", 
+            "description": "Customizable cycles to sustain cognitive load.",
+            "feature": "Focus Analytics"
+          },
+          {
+            "icon": "group",
+            "title": "Team Sync",
+            "description": "Live visibility into team focus states.",
+            "feature": "Status Automations"
+          }
+        ]
+      }
+    }
+  ]
+}
