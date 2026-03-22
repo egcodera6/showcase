@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SlideProps } from '../types';
 import { useShowcaseConfig } from '../hooks/useShowcaseConfig';
 import DynamicSlideRenderer from './DynamicSlideRenderer';
 import DarkModeToggle from './DarkModeToggle';

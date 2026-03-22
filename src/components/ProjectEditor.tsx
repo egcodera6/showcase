@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useShowcaseConfig } from '../hooks/useShowcaseConfig';
 import { 
-  Plus, Edit2, Trash2, Save, X, DeployedCode, ViewQuilt, GridView, 
-  ClinicalNotes, Bolt, Timer, Group, CheckCircle
+  Plus, Edit2, Trash2, Save, X, DeployedCode, ViewQuilt
 } from './Icons';
 import SectionEditor, { createStarterSections } from './sections/SectionEditor';
 import { Section } from '../types/sections';
