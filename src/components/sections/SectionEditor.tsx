@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Section, SectionType, GridSection, OverviewImageSection, InfoSection, FeaturesSection, StatsSection } from '../../types/sections';
+import { Section, SectionType, GridSection, OverviewImageSection, InfoSection, FeaturesSection, StatsSection, CTASection, CTAButton } from '../../types/sections';
 import { Plus, X, GripVertical, Trash2, Edit2, Check } from '../Icons';
 
 interface SectionEditorProps {
@@ -14,6 +14,7 @@ const sectionTypeLabels: Record<SectionType, { label: string; description: strin
   info: { label: 'Info Section', description: 'Summary, problem, solution, and stack', icon: 'ℹ' },
   features: { label: 'Features List', description: 'Feature callouts with icons', icon: '✓' },
   stats: { label: 'Stats Grid', description: 'Metrics or proof points', icon: '◫' },
+  cta: { label: 'Call to Action', description: 'Headline and action buttons', icon: '⚡' },
 };
 
 const createId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -30,6 +31,8 @@ const getSectionPreview = (section: Section) => {
       return `${section.features.length} feature${section.features.length === 1 ? '' : 's'}`;
     case 'stats':
       return `${section.stats.length} stat${section.stats.length === 1 ? '' : 's'}`;
+    case 'cta':
+      return `${section.buttons.length} button${section.buttons.length === 1 ? '' : 's'}${section.title ? ` • ${section.title}` : ''}`;
     default:
       return 'Section';
   }
@@ -239,6 +242,9 @@ const SectionEditPanel: React.FC<{
       )}
       {section.type === 'stats' && (
         <StatsSectionEdit section={section as StatsSection} onUpdate={onUpdate} />
+      )}
+      {section.type === 'cta' && (
+        <CTASectionEdit section={section as CTASection} onUpdate={onUpdate} />
       )}
     </motion.div>
   );
@@ -595,6 +601,117 @@ const StatsSectionEdit: React.FC<{ section: StatsSection; onUpdate: (u: Partial<
   );
 };
 
+const CTASectionEdit: React.FC<{ section: CTASection; onUpdate: (u: Partial<CTASection>) => void }> = ({
+  section,
+  onUpdate,
+}) => {
+  const updateButton = (id: string, updates: Partial<CTAButton>) => {
+    const newButtons = section.buttons.map((b) => (b.id === id ? { ...b, ...updates } : b));
+    onUpdate({ buttons: newButtons });
+  };
+
+  const addButton = () => {
+    const newButton: CTAButton = {
+      id: createId('btn'),
+      text: 'Click here',
+      link: '',
+      type: section.buttons.length === 0 ? 'primary' : 'secondary',
+      linkType: 'external',
+    };
+    onUpdate({ buttons: [...section.buttons, newButton] });
+  };
+
+  const removeButton = (id: string) => {
+    onUpdate({ buttons: section.buttons.filter((b) => b.id !== id) });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-3">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Headline</label>
+          <input
+            type="text"
+            value={section.title}
+            onChange={(e) => onUpdate({ title: e.target.value })}
+            placeholder="e.g. Ready to see more?"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
+          <textarea
+            value={section.description}
+            onChange={(e) => onUpdate({ description: e.target.value })}
+            rows={2}
+            placeholder="Short supporting text"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Buttons</label>
+        {section.buttons.map((button) => (
+          <div
+            key={button.id}
+            className="space-y-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800"
+          >
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={button.text}
+                onChange={(e) => updateButton(button.id, { text: e.target.value })}
+                placeholder="Button Text"
+                className="flex-1 rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-700"
+              />
+              <button
+                onClick={() => removeButton(button.id)}
+                className="rounded p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                value={button.type}
+                onChange={(e) => updateButton(button.id, { type: e.target.value as any })}
+                className="rounded border border-slate-300 px-2 py-1 text-xs dark:border-slate-600 dark:bg-slate-700"
+              >
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+              </select>
+              <select
+                value={button.linkType}
+                onChange={(e) => updateButton(button.id, { linkType: e.target.value as any })}
+                className="rounded border border-slate-300 px-2 py-1 text-xs dark:border-slate-600 dark:bg-slate-700"
+              >
+                <option value="external">External Link</option>
+                <option value="internal">Internal Path</option>
+                <option value="email">Email Address</option>
+              </select>
+            </div>
+            <input
+              type="text"
+              value={button.link}
+              onChange={(e) => updateButton(button.id, { link: e.target.value })}
+              placeholder={button.linkType === 'email' ? 'email@example.com' : 'URL or Path'}
+              className="w-full rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-700"
+            />
+          </div>
+        ))}
+        <button
+          onClick={addButton}
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 py-2 text-xs text-slate-500 hover:border-primary hover:text-primary"
+        >
+          <Plus className="h-4 w-4" />
+          Add Button
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Helper function to create default sections
 export const createDefaultSection = (type: SectionType): Section => {
   const id = createId('section');
@@ -656,6 +773,22 @@ export const createDefaultSection = (type: SectionType): Section => {
         stats: [
           { label: 'Users', value: '1,000+' },
           { label: 'Growth', value: '25%' },
+        ],
+      };
+    case 'cta':
+      return {
+        id,
+        type: 'cta',
+        title: 'Project ready for deployment?',
+        description: "Let's connect and discuss how we can build something amazing together.",
+        buttons: [
+          {
+            id: createId('btn'),
+            text: 'Get in Touch',
+            link: 'mailto:contact@example.com',
+            type: 'primary',
+            linkType: 'email',
+          },
         ],
       };
     default:

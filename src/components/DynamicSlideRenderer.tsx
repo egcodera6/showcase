@@ -1,20 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SlideProps } from '../types';
-import { Section, InfoSection, OverviewImageSection } from '../types/sections';
+import { Section, InfoSection, OverviewImageSection, ProjectData } from '../types/sections';
 import { 
   RocketLaunch, Favorite, ChatBubble, Send, ArrowForward, Person,
   DeployedCode, Analytics, ClinicalNotes, Check, GridView, Share, MoreHoriz, Mail, Language, ViewQuilt
 } from './Icons';
-import SectionRenderer from './sections/SectionRenderer';
+import { renderSections } from './sections/SectionRenderer';
 
-interface ProjectData {
-  id: string;
-  title: string;
-  type: 'cover' | 'browser-mockup' | 'project-details' | 'call-to-action';
-  data: any;
-  sections?: Section[];
-}
+// Using imported ProjectData type
 
 interface DynamicSlideProps extends SlideProps {
   project: ProjectData;
@@ -26,6 +20,7 @@ const sectionTypeLabels: Record<Section['type'], string> = {
   info: 'Info',
   features: 'Features',
   stats: 'Stats',
+  cta: 'Call to Action',
 };
 
 const getProjectTags = (data: any): string[] => {
@@ -223,267 +218,261 @@ const getProjectSections = (project: ProjectData): Section[] => {
 };
 
 const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, onPrevious }) => {
+  const data = project.data || {};
+  const sections = getProjectSections(project);
+
   const renderCoverSlide = () => (
-    <div className="relative w-full max-w-[600px] aspect-square bg-background-dark overflow-hidden rounded-xl shadow-2xl border border-primary/10 mx-auto">
-      {/* Abstract Geometric Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/20 blur-[120px]"></div>
-        <div className="absolute bottom-[-5%] right-[-5%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[100px]"></div>
-        <div 
-          className="absolute inset-0 opacity-20" 
-          style={{ 
-            backgroundImage: 'radial-gradient(circle at 2px 2px, #590df2 1px, transparent 0)', 
-            backgroundSize: '40px 40px' 
-          }}
-        ></div>
-      </div>
-
-      {/* Content Overlay */}
-      <div className="relative z-10 h-full flex flex-col p-12">
-        {/* Top Navigation / Logo */}
-        <header className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-lg text-slate-100">
-              <RocketLaunch className="text-2xl" />
-            </div>
-            <h2 className="text-slate-100 text-xl font-bold tracking-tight">TechAgency</h2>
-          </div>
-          <div className="text-slate-400 text-sm font-medium tracking-widest uppercase">
-            Portfolio 2024
-          </div>
-        </header>
-
-        {/* Main Central Card */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-10 shadow-2xl flex flex-col items-center text-center">
-            <div className="mb-6 flex gap-2">
-              <span className="h-1.5 w-12 bg-primary rounded-full"></span>
-              <span className="h-1.5 w-4 bg-primary/30 rounded-full"></span>
-              <span className="h-1.5 w-4 bg-primary/30 rounded-full"></span>
-            </div>
-            <h1 className="text-slate-100 text-5xl font-extrabold leading-tight tracking-tight mb-4">
-              Website <br />
-              <span className="text-primary">Showcase</span>
-            </h1>
-            <p className="text-slate-400 text-lg font-medium max-w-xs">
-              Recent Web Projects
-            </p>
-            <div className="mt-10 flex items-center gap-4">
-              <div className="flex -space-x-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="size-10 rounded-full border-2 border-background-dark bg-slate-800 flex items-center justify-center overflow-hidden">
-                    <Person className="text-sm text-slate-400" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-slate-300 text-sm font-semibold">+12 Client Successes</span>
-            </div>
-          </div>
+    <div className="flex h-screen w-full flex-col items-center gap-12 overflow-y-auto bg-background-light p-12 dark:bg-background-dark">
+      <div className="relative aspect-square w-full max-w-[600px] shrink-0 overflow-hidden rounded-xl border border-primary/10 bg-background-dark shadow-2xl">
+        {/* Abstract Geometric Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-[-10%] left-[-10%] h-[60%] w-[60%] rounded-full bg-primary/20 blur-[120px]"></div>
+          <div className="absolute bottom-[-5%] right-[-5%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[100px]"></div>
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 2px 2px, #590df2 1px, transparent 0)',
+              backgroundSize: '40px 40px',
+            }}
+          ></div>
         </div>
 
-        {/* Footer Section */}
-        <footer className="flex justify-between items-end">
-          <div className="flex gap-4">
-            <div className="flex flex-col items-center gap-1">
-              <div className="rounded-full bg-primary/20 p-3 text-primary border border-primary/20">
-                <Favorite className="text-xl" />
+        {/* Content Overlay */}
+        <div className="relative z-10 flex h-full flex-col p-12">
+          {/* Top Navigation / Logo */}
+          <header className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary p-2 text-slate-100">
+                <RocketLaunch className="text-2xl" />
               </div>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Like</p>
+              <h2 className="text-xl font-bold tracking-tight text-slate-100">TechAgency</h2>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <div className="rounded-full bg-primary/20 p-3 text-primary border border-primary/20">
-                <ChatBubble className="text-xl" />
+            <div className="text-sm font-medium uppercase tracking-widest text-slate-400">Portfolio 2024</div>
+          </header>
+
+          {/* Main Central Card */}
+          <div className="flex flex-1 items-center justify-center">
+            <div className="flex w-full flex-col items-center rounded-xl border border-white/10 bg-white/5 p-10 text-center shadow-2xl backdrop-blur-xl">
+              <div className="mb-6 flex gap-2">
+                <span className="h-1.5 w-12 rounded-full bg-primary"></span>
+                <span className="h-1.5 w-4 rounded-full bg-primary/30"></span>
+                <span className="h-1.5 w-4 rounded-full bg-primary/30"></span>
               </div>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Comment</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <div className="rounded-full bg-primary/20 p-3 text-primary border border-primary/20">
-                <Send className="text-xl" />
+              <h1 className="mb-4 text-5xl font-extrabold leading-tight tracking-tight text-slate-100">
+                Website <br />
+                <span className="text-primary">Showcase</span>
+              </h1>
+              <p className="text-lg font-medium text-slate-400">Recent Web Projects</p>
+              <div className="mt-10 flex items-center gap-4">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex size-10 items-center justify-center overflow-hidden rounded-full border-2 border-background-dark bg-slate-800"
+                    >
+                      <Person className="text-sm text-slate-400" />
+                    </div>
+                  ))}
+                </div>
+                <span className="text-sm font-semibold text-slate-300">+12 Client Successes</span>
               </div>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Share</p>
             </div>
           </div>
-          <motion.button
-            onClick={onNext}
-            className="flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="text-slate-100 text-xs font-bold">Swipe to Explore</span>
-            <ArrowForward className="text-primary text-sm" />
-          </motion.button>
-        </footer>
+
+          {/* Footer Section */}
+          <footer className="flex items-end justify-between">
+            <div className="flex gap-4">
+              <div className="flex flex-col items-center gap-1">
+                <div className="rounded-full border border-primary/20 bg-primary/20 p-3 text-primary">
+                  <Favorite className="text-xl" />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Like</p>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <div className="rounded-full border border-primary/20 bg-primary/20 p-3 text-primary">
+                  <ChatBubble className="text-xl" />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Comment</p>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <div className="rounded-full border border-primary/20 bg-primary/20 p-3 text-primary">
+                  <Send className="text-xl" />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Share</p>
+              </div>
+            </div>
+            <motion.button
+              onClick={onNext}
+              className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 transition-colors hover:bg-primary/20"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="text-xs font-bold text-slate-100">Swipe to Explore</span>
+              <ArrowForward className="text-sm text-primary" />
+            </motion.button>
+          </footer>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute right-4 top-1/2 flex -translate-y-1/2 flex-col gap-2 opacity-50">
+          <div className="h-1 w-1 rounded-full bg-primary"></div>
+          <div className="h-1 w-1 rounded-full bg-primary"></div>
+          <div className="h-1 w-1 rounded-full bg-primary"></div>
+          <div className="h-8 w-1 rounded-full bg-primary/30"></div>
+          <div className="h-1 w-1 rounded-full bg-primary"></div>
+        </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 flex flex-col gap-2 opacity-50">
-        <div className="w-1 h-1 bg-primary rounded-full"></div>
-        <div className="w-1 h-1 bg-primary rounded-full"></div>
-        <div className="w-1 h-1 bg-primary rounded-full"></div>
-        <div className="w-1 h-8 bg-primary/30 rounded-full"></div>
-        <div className="w-1 h-1 bg-primary rounded-full"></div>
-      </div>
+      {/* Dynamic Sections */}
+      <div className="w-full max-w-[900px]">{renderSections(sections)}</div>
     </div>
   );
 
-  const renderBrowserMockup = () => {
-    const { data } = project;
-    return (
-      <div className="flex items-center justify-center min-h-screen p-4 bg-background-light dark:bg-background-dark">
-        <div className="relative w-full max-w-[1080px] aspect-square bg-background-dark overflow-hidden border border-slate-800 rounded-xl flex flex-col">
-          {/* Tech Agency Navigation/Header */}
-          <header className="flex items-center justify-between px-12 py-8 z-10">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary rounded-lg">
-                <DeployedCode className="text-white" />
-              </div>
-              <span className="text-xl font-bold tracking-tight uppercase">TechStudio</span>
+  const renderBrowserMockup = () => (
+    <div className="flex w-full flex-col items-center gap-12 bg-background-light py-12 dark:bg-background-dark">
+      <div className="relative flex min-h-[900px] w-full max-w-[1080px] shrink-0 flex-col overflow-hidden rounded-xl border border-slate-800 bg-background-dark">
+        {/* Tech Agency Navigation/Header */}
+        <header className="z-10 flex items-center justify-between px-12 py-8">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-primary p-2">
+              <DeployedCode className="text-white" />
             </div>
-            <div className="flex gap-4">
-              <div className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Project {data.status}</span>
-              </div>
+            <span className="text-xl font-bold uppercase tracking-tight">TechStudio</span>
+          </div>
+          <div className="flex gap-4">
+            <div className="glass-card flex items-center gap-2 rounded-full px-4 py-2">
+              <span className="h-2 w-2 rounded-full bg-green-500"></span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Project {data.status}</span>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <main className="flex-1 px-12 flex flex-col">
-            {/* Project Identity */}
-            <div className="mb-10">
-              <h1 className="text-6xl font-extrabold tracking-tighter mb-2">{data.projectName}</h1>
-              <p className="text-primary text-xl font-medium">{data.subtitle}</p>
-            </div>
+        <main className="flex flex-1 flex-col px-12">
+          {/* Project Identity */}
+          <div className="mb-10">
+            <h1 className="mb-2 text-6xl font-extrabold tracking-tighter">{data.projectName}</h1>
+            <p className="text-xl font-medium text-primary">{data.subtitle}</p>
+          </div>
 
-            {/* Main Browser Mockup Container */}
-            <div className="relative flex-1 mb-12">
-              {/* Browser Mockup */}
-              <div className="w-full h-full rounded-xl overflow-hidden bg-slate-900 border border-slate-700 browser-shadow flex flex-col">
-                {/* Browser Header */}
-                <div className="h-10 bg-slate-800 flex items-center px-4 gap-2 border-b border-slate-700">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
-                  </div>
-                  <div className="mx-auto bg-slate-700/50 rounded px-10 py-1 text-[10px] text-slate-400 font-mono">
-                    {data.url}
-                  </div>
+          {/* Main Browser Mockup Container */}
+          <div className="relative mb-12 flex-1">
+            {/* Browser Mockup */}
+            <div className="browser-shadow flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
+              {/* Browser Header */}
+              <div className="flex h-10 items-center gap-2 border-b border-slate-700 bg-slate-800 px-4">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-red-500/50"></div>
+                  <div className="h-3 w-3 rounded-full bg-yellow-500/50"></div>
+                  <div className="h-3 w-3 rounded-full bg-green-500/50"></div>
                 </div>
+                <div className="mx-auto rounded bg-slate-700/50 px-10 py-1 font-mono text-[10px] text-slate-400">{data.url}</div>
+              </div>
 
-                {/* Browser Content */}
-                <div className="flex-1 relative bg-[#161022]">
-                  {(data.browserContent?.backgroundImage || data.images?.main) && (
-                    <>
-                      <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_50%_50%,_#590df2_0%,_transparent_70%)]"></div>
-                      <img 
-                        className="w-full h-full object-cover mix-blend-overlay" 
-                        alt={`${data.projectName} interface`}
-                        src={data.browserContent?.backgroundImage || data.images?.main}
-                      />
-                    </>
-                  )}
+              {/* Browser Content */}
+              <div className="relative flex-1 bg-[#161022]">
+                {(data.browserContent?.backgroundImage || data.images?.main) && (
+                  <>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_#590df2_0%,_transparent_70%)] opacity-40"></div>
+                    <img className="h-full w-full object-cover mix-blend-overlay" alt={`${data.projectName} interface`} src={data.browserContent?.backgroundImage || data.images?.main} />
+                  </>
+                )}
 
-                  {/* Render overlay elements */}
-                  {data.browserContent?.overlayElements?.map((element: any, index: number) => (
-                    <div key={index} className="absolute inset-0 p-8 flex flex-col justify-end">
-                      <div className="glass-card p-6 rounded-xl max-w-md">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Analytics className="text-primary" />
-                          <span className="font-bold">{element.label}</span>
-                        </div>
-                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-primary" style={{ width: `${element.value}%` }}></div>
-                        </div>
-                        <div className="flex justify-between mt-2 text-[10px] text-slate-400 uppercase font-bold">
-                          <span>{element.description}</span>
-                          <span>{element.value}{element.unit}</span>
-                        </div>
+                {/* Render overlay elements */}
+                {data.browserContent?.overlayElements?.map((element: any, index: number) => (
+                  <div key={index} className="absolute inset-0 flex flex-col justify-end p-8">
+                    <div className="glass-card max-w-md rounded-xl p-6">
+                      <div className="mb-2 flex items-center gap-3">
+                        <Analytics className="text-primary" />
+                        <span className="font-bold">{element.label}</span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                        <div className="h-full bg-primary" style={{ width: `${element.value}%` }}></div>
+                      </div>
+                      <div className="mt-2 flex justify-between text-[10px] font-bold uppercase text-slate-400">
+                        <span>{element.description}</span>
+                        <span>
+                          {element.value}
+                          {element.unit}
+                        </span>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
 
-                  {/* Render floating cards */}
-                  {data.browserContent?.floatingCards?.map((card: any, index: number) => (
-                    <motion.div
-                      key={index}
-                      className={`absolute ${card.position === 'right' ? '-right-6 top-20' : '-left-6 bottom-20'} glass-card p-5 rounded-xl border-primary/30 ${card.position === 'right' ? 'w-64' : 'w-56'}`}
-                      initial={{ opacity: 0, x: card.position === 'right' ? 50 : -50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.3 + index * 0.2 }}
-                    >
-                      {card.title && (
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                            {card.icon === 'clinical_notes' && <ClinicalNotes className="text-primary" />}
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-400 font-bold uppercase">{card.title}</p>
-                            <p className="text-sm font-bold">{card.subtitle}</p>
-                          </div>
-                        </div>
-                      )}
-                      {card.type === 'user-avatars' ? (
-                        <div className="flex justify-center -space-x-2">
-                          {card.content.map((avatar: string, i: number) => (
-                            <div key={i} className={`w-8 h-8 rounded-full border-2 border-background-dark ${avatar.startsWith('+') ? 'bg-slate-700' : avatar === 'SK' ? 'bg-primary text-white' : 'bg-slate-800'} flex items-center justify-center text-[10px] font-bold`}>
-                              {avatar}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {[...Array(card.content[1])].map((_, i) => (
-                            <div key={i} className={`h-1 ${i === 0 ? 'w-full' : 'w-3/4'} bg-slate-700 rounded-full`}></div>
-                          ))}
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Footer Details */}
-            <div className="grid grid-cols-2 gap-12 pb-12">
-              <div className="space-y-4">
-                <p className="text-slate-400 leading-relaxed text-lg">
-                  {data.description}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-3">
-                {data.features?.map((feature: string, index: number) => (
-                  <motion.div 
+                {/* Render floating cards */}
+                {data.browserContent?.floatingCards?.map((card: any, index: number) => (
+                  <motion.div
                     key={index}
-                    className="flex items-center gap-4 group"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 + index * 0.1 }}
+                    className={`absolute ${card.position === 'right' ? '-right-6 top-20' : '-left-6 bottom-20'} glass-card border-primary/30 rounded-xl p-5 ${card.position === 'right' ? 'w-64' : 'w-56'}`}
+                    initial={{ opacity: 0, x: card.position === 'right' ? 50 : -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.2 }}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary transition-colors">
-                      <Check className="text-sm text-primary group-hover:text-white" />
-                    </div>
-                    <span className="text-slate-100 font-medium">{feature}</span>
+                    {card.title && (
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">{card.icon === 'clinical_notes' && <ClinicalNotes className="text-primary" />}</div>
+                        <div>
+                          <p className="text-xs font-bold uppercase text-slate-400">{card.title}</p>
+                          <p className="text-sm font-bold">{card.subtitle}</p>
+                        </div>
+                      </div>
+                    )}
+                    {card.type === 'user-avatars' ? (
+                      <div className="flex justify-center -space-x-2">
+                        {card.content.map((avatar: string, i: number) => (
+                          <div
+                            key={i}
+                            className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-background-dark text-[10px] font-bold ${avatar.startsWith('+') ? 'bg-slate-700' : avatar === 'SK' ? 'bg-primary text-white' : 'bg-slate-800'}`}
+                          >
+                            {avatar}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {[...Array(card.content[1])].map((_, i) => (
+                          <div key={i} className={`h-1 rounded-full bg-slate-700 ${i === 0 ? 'w-full' : 'w-3/4'}`}></div>
+                        ))}
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>
             </div>
-          </main>
+          </div>
 
-          {/* Decorative Elements */}
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] -z-10 rounded-full"></div>
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 blur-[80px] -z-10 rounded-full"></div>
-        </div>
+          {/* Footer Details */}
+          <div className="grid grid-cols-2 gap-12 pb-12">
+            <div className="space-y-4">
+              <p className="text-lg leading-relaxed text-slate-400">{data.description}</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              {data.features?.map((feature: string, index: number) => (
+                <motion.div key={index} className="group flex items-center gap-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + index * 0.1 }}>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 transition-colors group-hover:bg-primary">
+                    <Check className="text-sm text-primary group-hover:text-white" />
+                  </div>
+                  <span className="font-medium text-slate-100">{feature}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </main>
+
+        {/* Decorative Elements */}
+        <div className="absolute bottom-0 right-0 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px]"></div>
+        <div className="absolute left-0 top-0 -z-10 h-64 w-64 rounded-full bg-primary/5 blur-[80px]"></div>
       </div>
-    );
-  };
+
+      {/* Dynamic Sections */}
+      <div className="w-full max-w-[900px]">{renderSections(sections)}</div>
+    </div>
+  );
 
   const renderProjectDetails = () => {
-    const { data } = project;
-    const sections = getProjectSections(project);
     const projectName = data.projectName || project.title;
     const headerTitle = data.headerTitle || `${projectName} Details`;
-    const description =
-      data.description || 'A section-driven details slide for combining screenshots, context, and proof points.';
+    const description = data.description || 'A section-driven details slide for combining screenshots, context, and proof points.';
     const platform = data.platform || data.metadata?.platform || 'Custom digital product';
     const status = data.status || data.metadata?.status || 'Prototype';
     const tags = getProjectTags(data);
@@ -493,7 +482,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
     }, {});
 
     return (
-      <div className="relative  overflow-hidden rounded-[32px] border border-slate-200 bg-[linear-gradient(145deg,#f8fafc_0%,#e2e8f0_42%,#ffffff_100%)] shadow-2xl dark:border-slate-800 dark:bg-[linear-gradient(145deg,#020617_0%,#111827_42%,#0f172a_100%)]">
+      <div className="dark:bg-[linear-gradient(145deg,#020617_0%,#111827_42%,#0f172a_100%)] relative overflow-hidden rounded-[32px] border border-slate-200 bg-[linear-gradient(145deg,#f8fafc_0%,#e2e8f0_42%,#ffffff_100%)] shadow-2xl dark:border-slate-800">
         <div className="absolute left-[-120px] top-[-140px] h-[420px] w-[420px] rounded-full bg-primary/15 blur-[90px]" />
         <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-sky-500/10 blur-[90px] dark:bg-primary/15" />
 
@@ -512,10 +501,10 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
               {status}
             </span>
             <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 text-slate-600 shadow-sm transition-colors hover:bg-slate-100 dark:bg-slate-950/70 dark:text-slate-300 dark:hover:bg-slate-900">
-              <Share className="w-4 h-4" />
+              <Share className="h-4 w-4" />
             </button>
             <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 text-slate-600 shadow-sm transition-colors hover:bg-slate-100 dark:bg-slate-950/70 dark:text-slate-300 dark:hover:bg-slate-900">
-              <MoreHoriz className="w-4 h-4" />
+              <MoreHoriz className="h-4 w-4" />
             </button>
           </div>
         </header>
@@ -524,9 +513,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
           <div className="grid h-full grid-cols-[400px_minmax(0,1fr)] overflow-hidden rounded-[28px] border border-white/70 bg-white/75 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/65">
             <div className="flex min-h-0 flex-col border-r border-slate-200/80 p-8 dark:border-slate-800/90">
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
-                  Case study
-                </span>
+                <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Case study</span>
                 <span className="rounded-full bg-slate-900 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white dark:bg-slate-100 dark:text-slate-900">
                   {sections.length} section{sections.length === 1 ? '' : 's'}
                 </span>
@@ -534,9 +521,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
 
               <div className="mt-6">
                 <p className="text-sm font-medium uppercase tracking-[0.34em] text-primary/80">{projectName}</p>
-                <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.05em] text-slate-950 dark:text-slate-50">
-                  {headerTitle}
-                </h1>
+                <h1 className="mt-4 text-5xl font-black leading-[0.94] tracking-[-0.05em] text-slate-950 dark:text-slate-50">{headerTitle}</h1>
                 <p className="mt-5 text-base leading-relaxed text-slate-600 dark:text-slate-300">{description}</p>
               </div>
 
@@ -556,10 +541,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Tags</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-300"
-                      >
+                      <span key={index} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-300">
                         {tag}
                       </span>
                     ))}
@@ -571,64 +553,40 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
                 <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">Layout Summary</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {Object.entries(sectionSummary).map(([type, count]) => (
-                    <span
-                      key={type}
-                      className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100"
-                    >
+                    <span key={type} className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-100">
                       {count} {sectionTypeLabels[type as Section['type']]}
                     </span>
                   ))}
                 </div>
-                <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                  The details slide now renders reusable sections first, so new projects no longer depend on a hardcoded content schema.
-                </p>
+                <p className="mt-4 text-sm leading-relaxed text-slate-300">The details slide now renders reusable sections first, so new projects no longer depend on a hardcoded content schema.</p>
               </div>
 
               <div className="mt-auto flex items-start gap-4 pt-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <GridView className="w-6 h-6" />
+                  <GridView className="h-6 w-6" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Better authoring flow</p>
-                  <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                    Arrange sections in the editor to change the slide structure instantly, with starter content that renders visibly.
-                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Arrange sections in the editor to change the slide structure instantly, with starter content that renders visibly.</p>
                 </div>
               </div>
             </div>
 
             <div className="flex min-h-0 flex-col p-6">
-              <div className="flex items-end justify-between border-b border-slate-200/80 pb-4 dark:border-slate-800/90">
+              <div className="flex h-11 items-center justify-between border-b border-slate-200/80 pb-4 dark:border-slate-800/90">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">Live Layout</p>
                   <h3 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Reusable sections</h3>
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                  Order follows editor
-                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-900 dark:text-slate-400">Order follows editor</span>
               </div>
 
-              <div className="mt-5 flex-1 min-h-0 overflow-y-auto pr-2">
-                {sections.length > 0 ? (
-                  <div className="space-y-4">
-                    {sections.map((section, index) => (
-                      <motion.div
-                        key={section.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.08 }}
-                      >
-                        <SectionRenderer section={section} />
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
+              <div className="mt-5 flex-1 pr-2">
+                {renderSections(sections) || (
                   <div className="flex h-full items-center justify-center rounded-[24px] border border-dashed border-slate-300 bg-white/60 p-8 text-center dark:border-slate-700 dark:bg-slate-950/40">
                     <div className="max-w-sm">
                       <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">No sections yet</p>
-                      <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                        Add grid, info, overview, features, or stats sections in the editor to build this slide.
-                      </p>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Add grid, info, overview, features, or stats sections in the editor to build this slide.</p>
                     </div>
                   </div>
                 )}
@@ -641,89 +599,74 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
   };
 
   const renderCallToAction = () => (
-    <div className="relative w-[1080px] h-[1080px] mx-auto overflow-hidden bg-background-light dark:bg-background-dark flex flex-col items-center justify-between p-20 border border-slate-200 dark:border-slate-800">
-      {/* Abstract Background Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary rounded-full opacity-40 blur-[80px]"></div>
-      <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-primary/40 rounded-full opacity-40 blur-[80px]"></div>
+    <div className="flex w-full flex-col items-center gap-12 bg-background-light py-12 dark:bg-background-dark">
+      <div className="relative flex aspect-square w-full max-w-[1080px] shrink-0 flex-col items-center justify-between overflow-hidden rounded-xl border border-slate-200 bg-background-light p-20 dark:border-slate-800 dark:bg-background-dark">
+        {/* Abstract Background Elements */}
+        <div className="absolute right-[-10%] top-[-10%] h-[600px] w-[600px] rounded-full bg-primary opacity-40 blur-[80px]"></div>
+        <div className="absolute bottom-[-5%] left-[-5%] h-[400px] w-[400px] rounded-full bg-primary/40 opacity-40 blur-[80px]"></div>
 
-      {/* Top Section: Logo & Branding */}
-      <div className="relative z-10 w-full flex justify-center">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary text-white">
-            <RocketLaunch className="text-4xl" />
+        {/* Top Section: Logo & Branding */}
+        <div className="relative z-10 flex w-full justify-center">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-primary p-3 text-white">
+              <RocketLaunch className="text-4xl" />
+            </div>
+            <h2 className="text-3xl font-black uppercase tracking-tighter">TechAgency</h2>
           </div>
-          <h2 className="text-3xl font-black tracking-tighter uppercase">TechAgency</h2>
         </div>
-      </div>
 
-      {/* Middle Section: Main CTA */}
-      <div className="relative z-10 w-full flex flex-col items-center gap-12 text-center">
-        <motion.div 
-          className="glass-panel p-16 rounded-xl max-w-3xl"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-7xl font-extrabold leading-[1.1] mb-8 tracking-tight">
-            Need a website <br />
-            <span className="text-primary">like this?</span>
-          </h1>
-          <p className="text-2xl text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-12">
-            Let's build your future with custom high-performance web solutions for tech-forward brands.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <motion.button 
-              className="bg-primary text-white px-12 py-6 rounded-xl text-2xl font-bold shadow-lg shadow-primary/20"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Get Started
-            </motion.button>
-            <motion.button 
-              className="glass-panel text-slate-900 dark:text-slate-100 px-12 py-6 rounded-xl text-2xl font-bold hover:bg-white/10 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              View Portfolio
-            </motion.button>
+        {/* Middle Section: Main CTA */}
+        <div className="relative z-10 flex w-full flex-col items-center text-center gap-12">
+          <motion.div className="glass-panel max-w-3xl rounded-xl p-16" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}>
+            <h1 className="mb-8 text-7xl font-extrabold leading-[1.1] tracking-tight">
+              Need a website <br />
+              <span className="text-primary">like this?</span>
+            </h1>
+            <p className="mx-auto mb-12 max-w-xl text-2xl text-slate-600 dark:text-slate-400">Let's build your future with custom high-performance web solutions for tech-forward brands.</p>
+            <div className="flex flex-col justify-center gap-6 sm:flex-row">
+              <motion.button className="rounded-xl bg-primary px-12 py-6 text-2xl font-bold text-white shadow-lg shadow-primary/20" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                Get Started
+              </motion.button>
+              <motion.button className="glass-panel rounded-xl px-12 py-6 text-2xl font-bold text-slate-900 transition-colors hover:bg-white/10 dark:text-slate-100" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                View Portfolio
+              </motion.button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Bottom Section: Contact Details */}
+        <motion.div className="relative z-10 w-full" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
+          <div className="glass-panel flex items-center justify-between rounded-xl px-10 py-8">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-semibold uppercase tracking-widest text-primary">Email us</span>
+              <div className="flex items-center gap-2">
+                <Mail className="text-slate-500" />
+                <p className="text-xl font-medium">hello@techagency.design</p>
+              </div>
+            </div>
+            <div className="h-12 w-[1px] bg-slate-700/50"></div>
+            <div className="flex flex-col gap-1 text-right">
+              <span className="text-sm font-semibold uppercase tracking-widest text-primary">Official Website</span>
+              <div className="flex items-center justify-end gap-2">
+                <p className="text-xl font-medium">www.techagency.design</p>
+                <Language className="text-slate-500" />
+              </div>
+            </div>
           </div>
         </motion.div>
-      </div>
 
-      {/* Bottom Section: Contact Details */}
-      <motion.div 
-        className="relative z-10 w-full"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-      >
-        <div className="glass-panel px-10 py-8 rounded-xl flex justify-between items-center">
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-semibold text-primary uppercase tracking-widest">Email us</span>
-            <div className="flex items-center gap-2">
-              <Mail className="text-slate-500" />
-              <p className="text-xl font-medium">hello@techagency.design</p>
-            </div>
-          </div>
-          <div className="h-12 w-[1px] bg-slate-700/50"></div>
-          <div className="flex flex-col gap-1 text-right">
-            <span className="text-sm font-semibold text-primary uppercase tracking-widest">Official Website</span>
-            <div className="flex items-center gap-2 justify-end">
-              <p className="text-xl font-medium">www.techagency.design</p>
-              <Language className="text-slate-500" />
-            </div>
+        {/* Decorative Elements */}
+        <div className="absolute left-20 top-1/2 -translate-y-1/2 opacity-20">
+          <div className="grid grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-2 w-2 rounded-full bg-slate-500"></div>
+            ))}
           </div>
         </div>
-      </motion.div>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-1/2 left-20 -translate-y-1/2 opacity-20">
-        <div className="grid grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="w-2 h-2 rounded-full bg-slate-500"></div>
-          ))}
-        </div>
       </div>
+
+      {/* Dynamic Sections */}
+      <div className="w-full max-w-[900px]">{renderSections(sections)}</div>
     </div>
   );
 
@@ -735,7 +678,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
       return renderBrowserMockup();
     case 'project-details':
       return renderProjectDetails();
-    case 'call-to-action':
+    case 'cta':
       return renderCallToAction();
     default:
       return <div>Unknown project type: {project.type}</div>;

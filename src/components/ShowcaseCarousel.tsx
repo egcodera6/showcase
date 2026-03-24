@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjects } from '../hooks/useProjects';
-import DynamicSlide from './DynamicSlide';
+import DynamicSlide from './DynamicSlideRenderer';
 import DarkModeToggle from './DarkModeToggle';
 
 const ShowcaseCarousel: React.FC = () => {

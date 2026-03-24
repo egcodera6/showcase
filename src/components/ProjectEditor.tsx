@@ -5,15 +5,9 @@ import {
   Plus, Edit2, Trash2, Save, X, DeployedCode, ViewQuilt
 } from './Icons';
 import SectionEditor, { createStarterSections } from './sections/SectionEditor';
-import { Section } from '../types/sections';
+import { Section, ProjectData } from '../types/sections';
 
-interface ProjectFormData {
-  id: string;
-  title: string;
-  type: 'cover' | 'browser-mockup' | 'project-details' | 'call-to-action';
-  data: any;
-  sections?: Section[];
-}
+interface ProjectFormData extends ProjectData {}
 
 const cloneProjectData = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
@@ -69,7 +63,7 @@ const ProjectEditor: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectFormData | null>(null);
 
-  const projectTemplates = {
+  const projectTemplates: Record<ProjectData['type'], any> = {
     'browser-mockup': {
       projectName: '',
       subtitle: '',
@@ -112,16 +106,27 @@ const ProjectEditor: React.FC = () => {
         status: '',
         tags: []
       }
+    },
+    'cover': {
+      projectName: '',
+      subtitle: '',
+      description: ''
+    },
+    'cta': {
+      projectName: '',
+      headline: '',
+      subheadline: '',
+      buttons: []
     }
   };
 
-  const handleAddProject = (type: 'browser-mockup' | 'project-details') => {
+  const handleAddProject = (type: ProjectData['type']) => {
     const newProject: ProjectFormData = {
       id: `project-${Date.now()}`,
       title: type === 'project-details' ? 'New Details Project' : 'New Browser Project',
       type,
       data: cloneProjectData(projectTemplates[type]),
-      sections: type === 'project-details' ? createStarterSections() : undefined,
+      sections: (type === 'project-details' || type === 'cta') ? createStarterSections() : undefined,
     };
     setEditingProject(newProject);
     setIsEditing(true);
@@ -328,7 +333,7 @@ const ProjectEditor: React.FC = () => {
                         <option value="browser-mockup">Browser Mockup</option>
                         <option value="project-details">Project Details</option>
                         <option value="cover">Cover Slide</option>
-                        <option value="call-to-action">Call to Action</option>
+                        <option value="cta">Call to Action</option>
                       </select>
                     </div>
                   </div>

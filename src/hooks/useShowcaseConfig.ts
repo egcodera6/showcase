@@ -1,14 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import { Section } from '../types/sections';
+import { Section, ProjectData } from '../types/sections';
 
-interface ProjectData {
-  id: string;
-  title: string;
-  type: 'cover' | 'browser-mockup' | 'project-details' | 'call-to-action';
-  data: any;
-  sections?: Section[];
-}
+// Using imported ProjectData type
 
 interface ShowcaseConfig {
   projects: ProjectData[];

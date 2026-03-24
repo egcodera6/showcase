@@ -1,32 +1,7 @@
 import { useState, useEffect } from 'react';
+import { ProjectData } from '../types/sections';
 
-export interface ProjectData {
-  id: string;
-  title: string;
-  type: 'cover' | 'browser-mockup' | 'project-details' | 'cta';
-  data: {
-    projectName?: string;
-    headerTitle?: string;
-    subtitle?: string;
-    description?: string;
-    problem?: string;
-    solution?: string;
-    techStack?: string[];
-    features?: string[];
-    stats?: Record<string, string>;
-    status?: string;
-    url?: string;
-    platform?: string;
-    version?: string;
-    tags?: string[];
-    images?: Record<string, string>;
-    headline?: string;
-    subheadline?: string;
-    email?: string;
-    website?: string;
-    buttons?: Array<{ text: string; primary: boolean }>;
-  };
-}
+// Using imported ProjectData type
 
 export const useProjects = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);

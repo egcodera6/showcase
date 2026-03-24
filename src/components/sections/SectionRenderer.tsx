@@ -7,6 +7,8 @@ import {
   InfoSection,
   FeaturesSection,
   StatsSection,
+  CTASection,
+  CTAButton,
 } from '../../types/sections';
 import {
   Analytics,
@@ -17,6 +19,9 @@ import {
   Timer,
   Group,
   GridView,
+  RocketLaunch,
+  Mail,
+  Language,
 } from '../Icons';
 
 interface SectionRendererProps {
@@ -35,6 +40,9 @@ const iconMap = {
   bolt: Bolt,
   timer: Timer,
   group: Group,
+  rocket: RocketLaunch,
+  mail: Mail,
+  language: Language,
 } as const;
 
 const renderIcon = (icon?: string, className = 'w-5 h-5') => {
@@ -55,9 +63,38 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({ section }) => {
       return <FeaturesSectionComponent section={section} />;
     case 'stats':
       return <StatsSectionComponent section={section} />;
+    case 'cta':
+      return <CTASectionComponent section={section} />;
     default:
-      return <div className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Unknown section type</div>;
+      return (
+        <div className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+          Unknown section type: {(section as any).type}
+        </div>
+      );
   }
+};
+
+/**
+ * Global helper to render a list of sections with safety guards and consistent animation.
+ * Use this in all slide components to ensure unified behavior.
+ */
+export const renderSections = (sections?: Section[]) => {
+  if (!sections || sections.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-6">
+      {sections.map((section, index) => (
+        <motion.div
+          key={section.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1, duration: 0.4 }}
+        >
+          <SectionRenderer section={section} />
+        </motion.div>
+      ))}
+    </div>
+  );
 };
 
 const GridSectionComponent: React.FC<{ section: GridSection }> = ({ section }) => {
@@ -365,6 +402,54 @@ const StatsSectionComponent: React.FC<{ section: StatsSection }> = ({ section })
             Add one or more stats to surface adoption, performance, or impact.
           </div>
         )}
+      </div>
+    </div>
+  );
+};
+
+const CTASectionComponent: React.FC<{ section: CTASection }> = ({ section }) => {
+  const getHref = (button: CTAButton) => {
+    if (button.linkType === 'email') {
+      return `mailto:${button.link}`;
+    }
+    return button.link;
+  };
+
+  return (
+    <div className={`${sectionShell} relative overflow-hidden p-8 text-center`}>
+      {/* Background Accents */}
+      <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
+      <div className="absolute -left-20 -bottom-20 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
+
+      <div className="relative z-10 mx-auto max-w-2xl">
+        <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-primary">Next Steps</p>
+        <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">
+          {section.title || 'Ready to see more?'}
+        </h3>
+        <p className="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+          {section.description || "Let's discuss how we can bring similar innovation to your next project."}
+        </p>
+
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          {section.buttons.map((button) => (
+            <a
+              key={button.id}
+              href={getHref(button)}
+              target={button.linkType === 'external' ? '_blank' : undefined}
+              rel={button.linkType === 'external' ? 'noopener noreferrer' : undefined}
+              aria-label={button.text}
+              className={`group relative flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-sm font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
+                button.type === 'primary'
+                  ? 'bg-primary text-white shadow-[0_10px_30px_-10px_rgba(89,13,242,0.5)] hover:scale-105 hover:bg-primary/90'
+                  : 'border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800'
+              }`}
+            >
+              {button.linkType === 'email' && <Mail className="h-4 w-4 transition-transform group-hover:scale-110" />}
+              {button.linkType === 'external' && <Language className="h-4 w-4 transition-transform group-hover:scale-110" />}
+              {button.text}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

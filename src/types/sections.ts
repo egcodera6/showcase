@@ -1,4 +1,4 @@
-export type SectionType = 'grid' | 'overview-image' | 'info' | 'features' | 'stats';
+export type SectionType = 'grid' | 'overview-image' | 'info' | 'features' | 'stats' | 'cta';
 
 export interface BaseSection {
   id: string;
@@ -61,15 +61,36 @@ export interface StatsSection extends BaseSection {
   }[];
 }
 
-export type Section = GridSection | OverviewImageSection | InfoSection | FeaturesSection | StatsSection;
+export type ButtonType = 'primary' | 'secondary';
+export type LinkType = 'internal' | 'external' | 'email';
 
-export interface ProjectWithSections {
+export interface CTAButton {
+  id: string;
+  text: string;
+  link: string;
+  type: ButtonType;
+  linkType: LinkType;
+}
+
+export interface CTASection extends BaseSection {
+  type: 'cta';
+  title: string;
+  description: string;
+  buttons: CTAButton[];
+}
+
+export type Section =
+  | GridSection
+  | OverviewImageSection
+  | InfoSection
+  | FeaturesSection
+  | StatsSection
+  | CTASection;
+
+export interface ProjectData {
   id: string;
   title: string;
-  type: 'cover' | 'browser-mockup' | 'project-details' | 'call-to-action';
-  projectName?: string;
-  subtitle?: string;
-  status?: string;
-  url?: string;
-  sections: Section[];
+  type: 'cover' | 'browser-mockup' | 'project-details' | 'cta';
+  data: any;
+  sections?: Section[];
 }
