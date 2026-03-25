@@ -89,7 +89,7 @@ const DynamicShowcaseCarousel: React.FC = () => {
   const currentProject = config.projects[currentIndex];
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark overflow-hidden">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark">
       {/* Navigation Controls */}
       <div className="fixed top-4 right-4 z-50 flex gap-2">
         <button

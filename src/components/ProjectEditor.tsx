@@ -110,7 +110,9 @@ const ProjectEditor: React.FC = () => {
     'cover': {
       projectName: '',
       subtitle: '',
-      description: ''
+      description: '',
+      stats: '',
+      footerText: ''
     },
     'cta': {
       projectName: '',
@@ -386,6 +388,48 @@ const ProjectEditor: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                {/* Cover Slide Fields */}
+                {editingProject.type === 'cover' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Project Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.data.projectName || ''}
+                        onChange={(e) => updateFormData('data.projectName', e.target.value)}
+                        placeholder="e.g. FaceSense Showcase"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Stats Label
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.data.stats || ''}
+                        onChange={(e) => updateFormData('data.stats', e.target.value)}
+                        placeholder="e.g. +12 Client Successes"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Footer Action Text
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.data.footerText || ''}
+                        onChange={(e) => updateFormData('data.footerText', e.target.value)}
+                        placeholder="e.g. Swipe to Explore"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Browser Mockup Fields */}
                 {editingProject.type === 'browser-mockup' && (
