@@ -89,7 +89,7 @@ const DynamicShowcaseCarousel: React.FC = () => {
   const currentProject = config.projects[currentIndex];
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark">
+    <div className="min-h-screen w-full overflow-x-hidden overflow-y-auto bg-background-light dark:bg-background-dark custom-scrollbar relative">
       {/* Navigation Controls */}
       <div className="fixed top-4 right-4 z-50 flex gap-2">
         <button
@@ -187,7 +187,7 @@ const DynamicShowcaseCarousel: React.FC = () => {
       )}
 
       {/* Main Slide Container */}
-      <div className="flex items-center justify-center min-h-screen p-8">
+      <div className="flex items-start justify-center min-h-screen p-6 md:p-8 pt-24 pb-24">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentIndex}
@@ -200,7 +200,7 @@ const DynamicShowcaseCarousel: React.FC = () => {
               x: { type: 'spring', stiffness: 300, damping: 30 },
               opacity: { duration: 0.2 },
             }}
-            className="w-full h-full flex items-center justify-center"
+            className="w-full min-h-[calc(100vh-10rem)] flex items-start justify-center"
           >
             <DynamicSlideRenderer
               project={currentProject}

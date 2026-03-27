@@ -1,8 +1,24 @@
 export type SectionType = 'grid' | 'overview-image' | 'info' | 'features' | 'stats' | 'cta';
 
+export interface SectionStyle {
+  width?: string;
+  height?: string;
+  padding?: string;
+  borderRadius?: string;
+  color?: string;
+  backgroundColor?: string;
+  fontSize?: string;
+  textAlign?: 'left' | 'center' | 'right';
+}
+
+export interface GridItemStyle extends SectionStyle {
+  backgroundImage?: string;
+}
+
 export interface BaseSection {
   id: string;
   type: SectionType;
+  styles?: SectionStyle;
 }
 
 export interface GridSection extends BaseSection {
@@ -20,6 +36,8 @@ export interface GridItem {
   description?: string;
   icon?: string;
   span?: '1' | '2';
+  widthPercent?: number;
+  styles?: GridItemStyle;
 }
 
 export interface OverviewImageSection extends BaseSection {

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Section, SectionType, GridSection, OverviewImageSection, InfoSection, FeaturesSection, StatsSection, CTASection, CTAButton } from '../../types/sections';
+import { Section, SectionType, GridSection, OverviewImageSection, InfoSection, FeaturesSection, StatsSection, CTASection, CTAButton, SectionStyle } from '../../types/sections';
 import { Plus, X, GripVertical, Trash2, Edit2, Check } from '../Icons';
+
+let globalStyleClipboard: SectionStyle | null = null;
+
 
 interface SectionEditorProps {
   sections: Section[];
@@ -246,9 +249,181 @@ const SectionEditPanel: React.FC<{
       {section.type === 'cta' && (
         <CTASectionEdit section={section as CTASection} onUpdate={onUpdate} />
       )}
+
+      {/* Shared Style Editor */}
+      <StyleEditor 
+        styles={section.styles} 
+        onChange={(styles) => onUpdate({ styles })}
+      />
     </motion.div>
   );
 };
+
+const STYLE_CONSTRAINTS: Record<string, { min: number; max: number; unit: string }> = {
+  fontSize: { min: 10, max: 72, unit: 'px' },
+  width: { min: 50, max: 2000, unit: 'px' },
+  height: { min: 30, max: 2000, unit: 'px' },
+  padding: { min: 0, max: 128, unit: 'px' },
+  borderRadius: { min: 0, max: 48, unit: 'px' },
+};
+
+const clampStyleValue = (key: string, raw: string): string => {
+  if (!raw) return raw;
+  // Allow percentage values through without clamping
+  if (raw.includes('%') || raw === 'auto' || raw.includes('rem') || raw.includes(' ')) return raw;
+  const constraint = STYLE_CONSTRAINTS[key];
+  if (!constraint) return raw;
+  const num = parseFloat(raw);
+  if (isNaN(num)) return raw;
+  const clamped = Math.min(Math.max(num, constraint.min), constraint.max);
+  return `${clamped}${constraint.unit}`;
+};
+
+const StyleEditor: React.FC<{
+  styles?: SectionStyle;
+  onChange: (styles: SectionStyle) => void;
+}> = ({ styles = {}, onChange }) => {
+  const updateStyle = (key: keyof SectionStyle, value: string) => {
+    onChange({ ...styles, [key]: value || undefined });
+  };
+
+  const handleBlurClamp = (key: keyof SectionStyle) => {
+    const val = styles[key];
+    if (typeof val === 'string' && val) {
+      const clamped = clampStyleValue(key, val);
+      if (clamped !== val) updateStyle(key, clamped);
+    }
+  };
+
+  const handleCopy = () => {
+    globalStyleClipboard = { ...styles };
+    alert('Style copied to clipboard!');
+  };
+
+  const handlePaste = () => {
+    if (globalStyleClipboard) {
+      onChange({ ...styles, ...globalStyleClipboard });
+    } else {
+      alert('No style in clipboard to paste.');
+    }
+  };
+
+  return (
+    <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
+      <div className="flex items-center justify-between mb-4">
+        <h5 className="font-semibold text-sm text-slate-900 dark:text-slate-100">Appearance & Style Overrides</h5>
+        <div className="flex gap-3">
+          <button onClick={handleCopy} className="text-xs font-semibold text-primary hover:underline">Copy Style</button>
+          <button onClick={handlePaste} className="text-xs font-semibold text-primary hover:underline">Paste Style</button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {/* Dimension Controls */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Width</label>
+          <input
+            type="text"
+            value={styles.width || ''}
+            onChange={(e) => updateStyle('width', e.target.value)}
+            onBlur={() => handleBlurClamp('width')}
+            placeholder="e.g. 100%, 600px, auto"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+          <span className="text-[9px] text-slate-400">50px – 2000px or %</span>
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Height</label>
+          <input
+            type="text"
+            value={styles.height || ''}
+            onChange={(e) => updateStyle('height', e.target.value)}
+            onBlur={() => handleBlurClamp('height')}
+            placeholder="e.g. auto, 400px"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+          <span className="text-[9px] text-slate-400">30px – 2000px or auto</span>
+        </div>
+
+        {/* Typography Controls */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Font Size</label>
+          <input
+            type="text"
+            value={styles.fontSize || ''}
+            onChange={(e) => updateStyle('fontSize', e.target.value)}
+            onBlur={() => handleBlurClamp('fontSize')}
+            placeholder="e.g. 16px, 1.2rem"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+          <span className="text-[9px] text-slate-400">10px – 72px</span>
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Text Align</label>
+          <select
+            value={styles.textAlign || ''}
+            onChange={(e) => updateStyle('textAlign', e.target.value as any)}
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          >
+            <option value="">Default</option>
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+
+        {/* Spacing Controls */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Padding</label>
+          <input
+            type="text"
+            value={styles.padding || ''}
+            onChange={(e) => updateStyle('padding', e.target.value)}
+            onBlur={() => handleBlurClamp('padding')}
+            placeholder="e.g. 2rem 4rem"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+          <span className="text-[9px] text-slate-400">0 – 128px or rem</span>
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Rounded Corners</label>
+          <input
+            type="text"
+            value={styles.borderRadius || ''}
+            onChange={(e) => updateStyle('borderRadius', e.target.value)}
+            onBlur={() => handleBlurClamp('borderRadius')}
+            placeholder="e.g. 24px"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+          <span className="text-[9px] text-slate-400">0 – 48px</span>
+        </div>
+
+        {/* Color Controls */}
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Background Color</label>
+          <input
+            type="text"
+            value={styles.backgroundColor || ''}
+            onChange={(e) => updateStyle('backgroundColor', e.target.value)}
+            placeholder="e.g. #f8fafc or transparent"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Text Color</label>
+          <input
+            type="text"
+            value={styles.color || ''}
+            onChange={(e) => updateStyle('color', e.target.value)}
+            placeholder="e.g. #111827"
+            className="w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 // Section-specific edit components
 const GridSectionEdit: React.FC<{ section: GridSection; onUpdate: (u: Partial<GridSection>) => void }> = ({ section, onUpdate }) => {
@@ -381,6 +556,39 @@ const GridSectionEdit: React.FC<{ section: GridSection; onUpdate: (u: Partial<Gr
                     )}
                   </>
                 )}
+              </div>
+              
+              {/* Grid Item specific styles */}
+              <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Width %</label>
+                  <input
+                    type="number"
+                    min={10}
+                    max={100}
+                    step={5}
+                    value={item.widthPercent || ''}
+                    onChange={(e) => {
+                      const val = e.target.value ? Math.min(100, Math.max(10, parseInt(e.target.value))) : undefined;
+                      updateItem(index, 'widthPercent', val);
+                    }}
+                    placeholder="e.g. 70 (auto if empty)"
+                    className="w-full px-2 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+                  />
+                  <span className="text-[9px] text-slate-400">10 – 100, controls card width in its row</span>
+                </div>
+                <input
+                  type="url"
+                  value={item.styles?.backgroundImage || ''}
+                  onChange={(e) => {
+                    const styles = { ...(item.styles || {}) };
+                    if (e.target.value) styles.backgroundImage = e.target.value;
+                    else delete styles.backgroundImage;
+                    updateItem(index, 'styles', styles);
+                  }}
+                  placeholder="Background Image URL (Optional)"
+                  className="w-full px-2 py-1.5 text-xs border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+                />
               </div>
             </div>
           ))}
@@ -721,6 +929,7 @@ export const createDefaultSection = (type: SectionType): Section => {
         id,
         type: 'grid',
         layout: '2x2',
+        styles: { padding: '1.5rem', borderRadius: '24px' },
         items: [
           { id: createId('item'), type: 'image', imageUrl: '' },
           {
@@ -746,6 +955,7 @@ export const createDefaultSection = (type: SectionType): Section => {
         imageUrl: '',
         title: 'Product overview',
         description: 'Add a screenshot that communicates the product experience at a glance.',
+        styles: { padding: '1.5rem', borderRadius: '24px' },
       };
     case 'info':
       return {
@@ -756,6 +966,7 @@ export const createDefaultSection = (type: SectionType): Section => {
         problem: 'Describe the user or business problem here.',
         solution: 'Explain how the product or feature solves that problem.',
         techStack: ['React', 'TypeScript', 'Tailwind CSS'],
+        styles: { padding: '1.5rem', fontSize: '14px', borderRadius: '24px' },
       };
     case 'features':
       return {
@@ -765,6 +976,7 @@ export const createDefaultSection = (type: SectionType): Section => {
           { icon: 'check', title: 'Feature 1', description: 'Description' },
           { icon: 'check', title: 'Feature 2', description: 'Description' },
         ],
+        styles: { padding: '1.5rem', fontSize: '14px', borderRadius: '24px' },
       };
     case 'stats':
       return {
@@ -774,6 +986,7 @@ export const createDefaultSection = (type: SectionType): Section => {
           { label: 'Users', value: '1,000+' },
           { label: 'Growth', value: '25%' },
         ],
+        styles: { padding: '1.5rem', fontSize: '14px', borderRadius: '24px' },
       };
     case 'cta':
       return {
@@ -790,6 +1003,7 @@ export const createDefaultSection = (type: SectionType): Section => {
             linkType: 'email',
           },
         ],
+        styles: { padding: '2rem', fontSize: '14px', borderRadius: '24px' },
       };
     default:
       return { id, type: 'info', title: '', description: '' };

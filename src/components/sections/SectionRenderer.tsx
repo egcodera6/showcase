@@ -9,6 +9,7 @@ import {
   StatsSection,
   CTASection,
   CTAButton,
+  SectionStyle,
 } from '../../types/sections';
 import {
   Analytics,
@@ -49,6 +50,17 @@ const renderIcon = (icon?: string, className = 'w-5 h-5') => {
   const Icon = icon ? iconMap[icon as keyof typeof iconMap] : undefined;
   const Component = Icon || CheckCircle;
   return <Component className={className} />;
+};
+
+const getStyleProps = (styles?: SectionStyle): React.CSSProperties => {
+  if (!styles) return {};
+  const props: React.CSSProperties = { ...styles };
+  if ((styles as any).backgroundImage) {
+    props.backgroundImage = `url(${(styles as any).backgroundImage})`;
+    props.backgroundSize = 'cover';
+    props.backgroundPosition = 'center';
+  }
+  return props;
 };
 
 const SectionRenderer: React.FC<SectionRendererProps> = ({ section }) => {
@@ -98,6 +110,8 @@ export const renderSections = (sections?: Section[]) => {
 };
 
 const GridSectionComponent: React.FC<{ section: GridSection }> = ({ section }) => {
+  const hasPercentWidths = section.items.some(item => item.widthPercent);
+
   const getGridClasses = () => {
     switch (section.layout) {
       case '2x2':
@@ -119,6 +133,27 @@ const GridSectionComponent: React.FC<{ section: GridSection }> = ({ section }) =
     return '';
   };
 
+  // Group items into rows based on widthPercent (filling up to 100% per row)
+  const getRows = () => {
+    const rows: typeof section.items[] = [];
+    let currentRow: typeof section.items = [];
+    let currentRowPercent = 0;
+
+    for (const item of section.items) {
+      const pct = item.widthPercent || 50; // default to 50% if not set
+      if (currentRowPercent + pct > 100 && currentRow.length > 0) {
+        rows.push(currentRow);
+        currentRow = [item];
+        currentRowPercent = pct;
+      } else {
+        currentRow.push(item);
+        currentRowPercent += pct;
+      }
+    }
+    if (currentRow.length > 0) rows.push(currentRow);
+    return rows;
+  };
+
   const layoutLabel =
     section.layout === '2x2'
       ? '2 x 2 grid'
@@ -128,8 +163,84 @@ const GridSectionComponent: React.FC<{ section: GridSection }> = ({ section }) =
           ? '2 + 1 columns'
           : '3 equal columns';
 
+  const renderItem = (item: typeof section.items[0], index: number, flexStyle?: React.CSSProperties) => {
+    const type = item.type.toLowerCase().replace(/\s/g, '-');
+    const isFeatureCard = type === 'feature-card' || type === 'featured-card';
+    const isImage = type === 'image';
+    const isCard = type === 'card' || type === 'content-card';
+
+    return (
+      <motion.div
+        key={item.id || index}
+        className={`relative overflow-hidden rounded-[20px] border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 ${!hasPercentWidths ? getItemSpan(index) : ''} flex flex-col justify-end min-h-[280px] group`}
+        style={{ ...getStyleProps(item.styles), ...flexStyle }}
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.08 }}
+      >
+        {/* If item has a specific imageUrl (legacy) or backgroundImage applied via styles, ensure text readability with a gradient overlay */}
+        {(item.imageUrl || item.styles?.backgroundImage) && (
+          <>
+            {item.imageUrl && !item.styles?.backgroundImage && (
+              <img className="absolute inset-0 h-full w-full object-cover z-0" alt={item.title || 'Grid item'} src={item.imageUrl} />
+            )}
+            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-transparent z-0 pointer-events-none" />
+          </>
+        )}
+
+        {isImage && !item.imageUrl && !item.styles?.backgroundImage && (
+          <div className="absolute inset-0 flex h-full flex-col items-center justify-center gap-3 bg-[linear-gradient(135deg,rgba(59,130,246,0.12),rgba(15,23,42,0.03))] p-6 text-center dark:bg-[linear-gradient(135deg,rgba(89,13,242,0.18),rgba(15,23,42,0.35))]">
+            <div className="rounded-2xl bg-white/80 p-3 text-slate-500 shadow-sm dark:bg-slate-900/80 dark:text-slate-300">
+              <GridView className="h-7 w-7" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Image slot ready</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Add an image URL to display a screenshot or key visual.</p>
+            </div>
+          </div>
+        )}
+
+        <div className="relative z-10 p-5 mt-auto w-full transition-transform duration-300 group-hover:translate-y-0">
+          {isCard && (
+            <div>
+              <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${item.imageUrl || item.styles?.backgroundImage ? 'text-primary-300' : 'text-primary'}`}>
+                {item.subtitle || 'Content Card'}
+              </p>
+              <h4 className={`mt-2 text-xl font-bold ${item.imageUrl || item.styles?.backgroundImage ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
+                {item.title || 'Project Detail'}
+              </h4>
+              <p className={`mt-2 text-sm leading-relaxed ${item.imageUrl || item.styles?.backgroundImage ? 'text-slate-200' : 'text-slate-600 dark:text-slate-400'}`}>
+                {item.description || 'Additional context about this part of the project.'}
+              </p>
+              <div className="mt-4 h-1 w-12 rounded-full bg-primary/40" />
+            </div>
+          )}
+
+          {isFeatureCard && (
+            <div>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-primary shadow-sm dark:bg-slate-950/90 backdrop-blur">
+                  {renderIcon(item.icon, 'w-5 h-5')}
+                </div>
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary backdrop-blur">
+                  Featured
+                </span>
+              </div>
+              <h4 className={`text-xl font-bold ${item.imageUrl || item.styles?.backgroundImage ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
+                {item.title || 'Add a featured highlight'}
+              </h4>
+              <p className={`mt-2 text-sm leading-relaxed ${item.imageUrl || item.styles?.backgroundImage ? 'text-slate-200' : 'text-slate-700 dark:text-slate-300'}`}>
+                {item.description || 'Use the featured card for standout metrics, differentiators, or product highlights.'}
+              </p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
-    <div className={`${sectionShell} min-h-[320px] p-4`}>
+    <div className={`${sectionShell} min-h-[320px] p-4`} style={getStyleProps(section.styles)}>
       <div className="mb-4 flex items-center justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">Grid Section</p>
@@ -140,90 +251,29 @@ const GridSectionComponent: React.FC<{ section: GridSection }> = ({ section }) =
         </span>
       </div>
 
-      <div className={`grid ${getGridClasses()} auto-rows-fr gap-3`}>
-        {section.items.map((item, index) => {
-          const type = item.type.toLowerCase().replace(/\s/g, '-');
-          const isFeatureCard = type === 'feature-card' || type === 'featured-card';
-          const isImage = type === 'image';
-          const isCard = type === 'card' || type === 'content-card';
-
-          return (
-            <motion.div
-              key={item.id || index}
-              className={`relative overflow-hidden rounded-[20px] border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900 ${getItemSpan(index)} min-h-[150px]`}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.08 }}
-            >
-              {isImage && (
-                <>
-                  {item.imageUrl ? (
-                    <>
-                      <img className="h-full w-full object-cover" alt={item.title || 'Grid item'} src={item.imageUrl} />
-                      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-950/70 to-transparent" />
-                    </>
-                  ) : (
-                    <div className="flex h-full flex-col items-center justify-center gap-3 bg-[linear-gradient(135deg,rgba(59,130,246,0.12),rgba(15,23,42,0.03))] p-6 text-center dark:bg-[linear-gradient(135deg,rgba(89,13,242,0.18),rgba(15,23,42,0.35))]">
-                      <div className="rounded-2xl bg-white/80 p-3 text-slate-500 shadow-sm dark:bg-slate-900/80 dark:text-slate-300">
-                        <GridView className="h-7 w-7" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Image slot ready</p>
-                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Add an image URL to display a screenshot or key visual.</p>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {isCard && (
-                <div className="flex h-full flex-col justify-between p-5">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
-                      {item.subtitle || 'Content Card'}
-                    </p>
-                    <h4 className="mt-3 text-lg font-bold text-slate-900 dark:text-slate-100">
-                      {item.title || 'Project Detail'}
-                    </h4>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                      {item.description || 'Additional context about this part of the project.'}
-                    </p>
-                  </div>
-                  <div className="mt-6 h-1.5 w-20 rounded-full bg-primary/20" />
-                </div>
-              )}
-
-              {isFeatureCard && (
-                <div className="flex h-full flex-col justify-between bg-[linear-gradient(135deg,rgba(37,99,235,0.12),rgba(14,165,233,0.03))] p-5 dark:bg-[linear-gradient(135deg,rgba(89,13,242,0.22),rgba(15,23,42,0.18))]">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 text-primary shadow-sm dark:bg-slate-950/80">
-                      {renderIcon(item.icon, 'w-5 h-5')}
-                    </div>
-                    <span className="rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-950/70 dark:text-slate-400">
-                      Featured
-                    </span>
-                  </div>
-                  <div className="mt-8">
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                      {item.title || 'Add a featured highlight'}
-                    </h4>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                      {item.description || 'Use the featured card for standout metrics, differentiators, or product highlights.'}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
+      {hasPercentWidths ? (
+        <div className="flex flex-col gap-3">
+          {getRows().map((row, rowIndex) => (
+            <div key={rowIndex} className="flex gap-3">
+              {row.map((item, itemIndex) => {
+                const pct = item.widthPercent || Math.floor(100 / row.length);
+                return renderItem(item, rowIndex * 10 + itemIndex, { flex: `0 0 calc(${pct}% - ${(row.length - 1) * 12 / row.length}px)` });
+              })}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`grid ${getGridClasses()} auto-rows-fr gap-3`}>
+          {section.items.map((item, index) => renderItem(item, index))}
+        </div>
+      )}
     </div>
   );
 };
 
 const OverviewImageSectionComponent: React.FC<{ section: OverviewImageSection }> = ({ section }) => {
   return (
-    <div className={`${sectionShell} min-h-[340px] overflow-hidden`}>
+    <div className={`${sectionShell} min-h-[340px] overflow-hidden`} style={getStyleProps(section.styles)}>
       <div className="flex h-full flex-col">
         <div className="flex h-11 items-center gap-3 border-b border-slate-200 bg-slate-100/90 px-4 dark:border-slate-800 dark:bg-slate-900/80">
           <div className="flex gap-1.5">
@@ -297,7 +347,7 @@ const OverviewImageSectionComponent: React.FC<{ section: OverviewImageSection }>
 
 const InfoSectionComponent: React.FC<{ section: InfoSection }> = ({ section }) => {
   return (
-    <div className={`${sectionShell} min-h-[250px] p-5`}>
+    <div className={`${sectionShell} min-h-[250px] p-5`} style={getStyleProps(section.styles)}>
       <div className="flex flex-col gap-5">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">Info Section</p>
@@ -348,7 +398,7 @@ const InfoSectionComponent: React.FC<{ section: InfoSection }> = ({ section }) =
 
 const FeaturesSectionComponent: React.FC<{ section: FeaturesSection }> = ({ section }) => {
   return (
-    <div className={`${sectionShell} min-h-[230px] p-5`}>
+    <div className={`${sectionShell} min-h-[230px] p-5`} style={getStyleProps(section.styles)}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">Key Features</p>
       <div className="mt-4 space-y-3">
         {section.features.length > 0 ? (
@@ -381,7 +431,7 @@ const FeaturesSectionComponent: React.FC<{ section: FeaturesSection }> = ({ sect
 
 const StatsSectionComponent: React.FC<{ section: StatsSection }> = ({ section }) => {
   return (
-    <div className={`${sectionShell} min-h-[220px] p-5`}>
+    <div className={`${sectionShell} min-h-[220px] p-5`} style={getStyleProps(section.styles)}>
       <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">Stats</p>
       <div className="mt-4 grid grid-cols-2 gap-3">
         {section.stats.length > 0 ? (
@@ -416,7 +466,7 @@ const CTASectionComponent: React.FC<{ section: CTASection }> = ({ section }) => 
   };
 
   return (
-    <div className={`${sectionShell} relative overflow-hidden p-8 text-center`}>
+    <div className={`${sectionShell} relative overflow-hidden p-8 text-center`} style={getStyleProps(section.styles)}>
       {/* Background Accents */}
       <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
       <div className="absolute -left-20 -bottom-20 h-48 w-48 rounded-full bg-primary/5 blur-[60px]" />
@@ -438,10 +488,10 @@ const CTASectionComponent: React.FC<{ section: CTASection }> = ({ section }) => 
               target={button.linkType === 'external' ? '_blank' : undefined}
               rel={button.linkType === 'external' ? 'noopener noreferrer' : undefined}
               aria-label={button.text}
-              className={`group relative flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-sm font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
+              className={`group relative flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-sm font-bold transition-transform hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 ${
                 button.type === 'primary'
-                  ? 'bg-primary text-white shadow-[0_10px_30px_-10px_rgba(89,13,242,0.5)] hover:scale-105 hover:bg-primary/90'
-                  : 'border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800'
+                  ? 'bg-primary text-white shadow-[0_10px_30px_-10px_rgba(89,13,242,0.5)]'
+                  : 'border border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white'
               }`}
             >
               {button.linkType === 'email' && <Mail className="h-4 w-4 transition-transform group-hover:scale-110" />}

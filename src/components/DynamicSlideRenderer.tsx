@@ -88,10 +88,12 @@ const SharedSlideShell: React.FC<{
   const status = data.status || data.metadata?.status || 'Prototype';
 
   return (
-    <div className="dark:bg-[linear-gradient(145deg,#020617_0%,#111827_42%,#0f172a_100%)] relative min-h-screen overflow-hidden rounded-[32px] border border-slate-200 bg-[linear-gradient(145deg,#f8fafc_0%,#e2e8f0_42%,#ffffff_100%)] shadow-2xl dark:border-slate-800 transition-all duration-500 mb-12">
-      {/* Dynamic Background Elements */}
-      <div className="absolute left-[-120px] top-[-140px] h-[420px] w-[420px] rounded-full bg-primary/10 blur-[90px]" />
-      <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-sky-500/5 blur-[90px] dark:bg-primary/10" />
+    <div className="dark:bg-[linear-gradient(145deg,#020617_0%,#111827_42%,#0f172a_100%)] relative min-h-[calc(100vh-4rem)] h-full w-full rounded-[32px] border border-slate-200 bg-[linear-gradient(145deg,#f8fafc_0%,#e2e8f0_42%,#ffffff_100%)] shadow-2xl dark:border-slate-800 transition-all duration-500 flex flex-col">
+      {/* Dynamic Background Elements - Scoped to their own overflow wrapper */}
+      <div className="absolute inset-0 overflow-hidden rounded-[32px] pointer-events-none">
+        <div className="absolute left-[-120px] top-[-140px] h-[420px] w-[420px] rounded-full bg-primary/10 blur-[90px]" />
+        <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-sky-500/5 blur-[90px] dark:bg-primary/10" />
+      </div>
 
       {/* Standard Header */}
       <header className="relative z-10 flex items-center justify-between border-b border-slate-200/80 px-10 py-8 dark:border-slate-800/90">
@@ -117,16 +119,24 @@ const SharedSlideShell: React.FC<{
         </div>
       </header>
 
-      <div className="relative z-10 flex-1 px-8 pb-10 mt-6">
-        <div className="grid grid-cols-[360px_minmax(0,1fr)] gap-0 overflow-hidden rounded-[28px] border border-white/70 bg-white/75 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/65">
+      <div className="relative z-10 flex-1 px-8 pb-8 mt-2 min-h-full">
+        {/* We remove overflow-hidden so the sticky sidebar can track vertically. We add rounded borders individually. */}
+        <div className="flex min-h-full rounded-[28px] border border-white/70 bg-white/75 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/65">
           {/* Left Sidebar */}
-          <div className="flex flex-col border-r border-slate-200/80 p-8 dark:border-slate-800/90 bg-slate-50/30 dark:bg-slate-900/10">
-             {sidebarContent}
-          </div>
+          {sidebarContent && (
+            <>
+              {/* Actual Fixed Sidebar Wrapper */}
+              <div className="fixed top-0 bottom-0 left-0 w-[360px] border-r border-slate-200/80 dark:border-slate-800/90 bg-slate-50/10 dark:bg-slate-900/10 backdrop-blur-sm z-40 p-8 pt-[120px] overflow-y-auto custom-scrollbar rounded-l-[28px]">
+                 {sidebarContent}
+              </div>
+              {/* Layout Spacer to maintain flow */}
+              <div className="w-[360px] shrink-0 border-r border-slate-200/10 dark:border-slate-800/10" />
+            </>
+          )}
 
           {/* Right Main Content + Sections Container */}
-          <div className="flex flex-col p-8 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-             <div className="flex-1 w-full flex flex-col items-center">
+          <div className="flex-1 flex flex-col p-8 min-h-full rounded-r-[28px]">
+             <div className="flex-1 w-full flex flex-col">
                {children}
              </div>
              
@@ -169,8 +179,8 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
                <h3 className="mt-4 text-3xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight">Project Identity</h3>
                <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400">This cover represents the starting point of the presentation, conveying brand identity and core metrics.</p>
              </div>
-             <div className="mt-8 rounded-[24px] bg-slate-950 p-6 text-white dark:bg-slate-900 shadow-xl shadow-primary/5">
-               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary/80">Highlights</p>
+              <div className="mt-8 rounded-[24px] bg-white p-6 dark:text-white text-slate-900 dark:bg-slate-900 shadow-xl shadow-primary/5 border border-slate-100 dark:border-slate-800">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary/80">Highlights</p>
                <div className="mt-6 flex flex-col gap-6">
                  <div className="flex items-center gap-4">
                    <div className="flex h-12 w-12 items-center justify-center bg-primary/20 rounded-2xl text-primary">
@@ -187,7 +197,7 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
          }
        >
          <div className="flex w-full flex-col items-center justify-center py-6">
-           <div className="relative aspect-square w-full max-w-[500px] shrink-0 overflow-hidden rounded-2xl border border-primary/10 bg-background-dark shadow-2xl">
+           <div className="relative aspect-square w-full max-w-[500px] shrink-0 overflow-hidden rounded-2xl border border-primary/10 bg-slate-50 dark:bg-background-dark shadow-2xl">
               <div className="absolute inset-0 z-0">
                 <div className="absolute top-[-10%] left-[-10%] h-[60%] w-[60%] rounded-full bg-primary/20 blur-[120px]"></div>
                 <div className="absolute bottom-[-5%] right-[-5%] h-[50%] w-[50%] rounded-full bg-primary/10 blur-[100px]"></div>
@@ -195,25 +205,25 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
               </div>
               <div className="relative z-10 flex h-full flex-col p-12">
                 <div className="flex flex-1 items-center justify-center">
-                  <div className="flex w-full flex-col items-center rounded-xl border border-white/10 bg-white/5 p-10 text-center shadow-2xl backdrop-blur-xl">
+                  <div className="flex w-full flex-col items-center rounded-xl border border-primary/10 bg-white/70 p-10 text-center shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
                     <div className="mb-6 flex gap-2">
                       <span className="h-1.5 w-12 rounded-full bg-primary" />
                       <span className="h-1.5 w-4 rounded-full bg-primary/30" />
                     </div>
-                    <h1 className="mb-4 text-5xl font-black leading-tight tracking-tight text-slate-100">
+                    <h1 className="mb-4 text-5xl font-black leading-tight tracking-tight text-slate-800 dark:text-slate-100">
                       {renderProjectName(projectName)}
                     </h1>
-                    <p className="text-lg font-medium text-slate-400">{data.subtitle || 'Recent Web Projects'}</p>
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">{data.subtitle || 'Recent Web Projects'}</p>
                   </div>
                 </div>
                 <footer className="flex items-end justify-center">
                   <motion.button
                     onClick={onNext}
-                    className="flex items-center gap-3 rounded-full border border-primary/20 bg-primary/10 px-10 py-5 transition-colors hover:bg-primary/20"
+                    className="flex items-center gap-3 rounded-full border border-primary/20 bg-primary/10 px-10 py-5 transition-colors hover:bg-primary/20 dark:bg-primary/10"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <span className="text-sm font-bold text-slate-100 uppercase tracking-widest">{footerText}</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-widest">{footerText}</span>
                     <ArrowForward className="text-xl text-primary" />
                   </motion.button>
                 </footer>
@@ -258,16 +268,16 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
           </div>
         }
       >
-        <div className="relative w-full max-w-[900px] shrink-0 flex flex-col overflow-hidden rounded-xl border border-slate-300 dark:border-slate-800 bg-background-dark shadow-2xl mx-auto mb-4">
-            <div className="flex h-10 items-center gap-2 border-b border-slate-700 bg-slate-800 px-4">
+        <div className="relative w-full max-w-[900px] shrink-0 flex flex-col overflow-hidden rounded-xl border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-background-dark shadow-2xl mx-auto mb-4">
+            <div className="flex h-10 items-center gap-2 border-b border-slate-300 bg-slate-200 px-4 dark:border-slate-700 dark:bg-slate-800">
               <div className="flex gap-1.5">
                 <div className="h-3 w-3 rounded-full bg-red-500/50" />
                 <div className="h-3 w-3 rounded-full bg-yellow-500/50" />
                 <div className="h-3 w-3 rounded-full bg-green-500/50" />
               </div>
-              <div className="mx-auto rounded bg-slate-700/50 px-10 py-1 font-mono text-[10px] text-slate-400">{data.url}</div>
+              <div className="mx-auto rounded bg-slate-300/50 px-10 py-1 font-mono text-[10px] text-slate-600 dark:bg-slate-700/50 dark:text-slate-400">{data.url}</div>
             </div>
-            <div className="relative flex-1 aspect-video bg-[#161022]">
+            <div className="relative flex-1 aspect-video bg-slate-200 dark:bg-[#161022]">
               {(data.browserContent?.backgroundImage || data.images?.main) && (
                 <img className="h-full w-full object-cover" alt={projectName} src={data.browserContent?.backgroundImage || data.images?.main} />
               )}
@@ -325,11 +335,11 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
                  ))}
                </div>
              )}
-             <div className="mt-4 rounded-3xl bg-slate-950 p-6 text-white dark:bg-slate-900/60 shadow-2xl">
-               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary/80">Slide Summary</p>
-               <div className="mt-4 flex flex-wrap gap-3">
-                 {Object.entries(sectionSummary).map(([type, count]) => (
-                   <span key={type} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-100">
+              <div className="mt-4 rounded-3xl bg-white p-6 dark:text-white text-slate-900 dark:bg-slate-900/60 shadow-2xl border border-slate-100 dark:border-white/5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary/80">Slide Summary</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {Object.entries(sectionSummary).map(([type, count]) => (
+                    <span key={type} className="rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest dark:text-slate-100 text-slate-700">
                      {count} {sectionTypeLabels[type as Section['type']]}
                    </span>
                  ))}
@@ -360,27 +370,36 @@ const DynamicSlideRenderer: React.FC<DynamicSlideProps> = ({ project, onNext, on
          headerIcon={<ChatBubble className="text-3xl" />}
          sections={sections}
          sidebarContent={
-           <div className="space-y-8">
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Call to Action</span>
+           <div className="flex flex-col h-full space-y-8 justify-between">
+              <div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">Call to Action</span>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm font-medium uppercase tracking-[0.34em] text-primary/80">Conclusion</p>
+                  <h3 className="mt-4 text-3xl font-black text-slate-900 dark:text-slate-100 leading-tight">Ready to collaborate?</h3>
+                </div>
               </div>
-              <div className="mt-4">
-                <p className="text-sm font-medium uppercase tracking-[0.34em] text-primary/80">Conclusion</p>
-                <h3 className="mt-4 text-3xl font-black text-slate-900 dark:text-slate-100 leading-tight">Ready to collaborate?</h3>
+              <div className="pt-8 border-t border-slate-200/50 dark:border-slate-800/50">
+                <p className="text-xs text-slate-500 dark:text-slate-400">© {new Date().getFullYear()} Showcase Projects. All rights reserved.</p>
+                <div className="mt-4 flex gap-3">
+                  <a href="/contact" className="text-xs font-bold text-primary hover:underline">Contact Us</a>
+                  <a href="/about" className="text-xs font-bold text-slate-500 hover:text-primary transition-colors">About</a>
+                </div>
               </div>
            </div>
          }
        >
-         <div className="relative w-full max-w-[850px] flex flex-col items-center justify-center overflow-hidden rounded-[28px] border border-slate-200 bg-white p-16 dark:border-slate-700 dark:bg-slate-950/80 mx-auto shadow-xl">
+         <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden rounded-[28px] border border-slate-200 bg-white p-16 dark:border-slate-700 dark:bg-slate-950/80 shadow-xl">
             <h1 className="mb-8 text-5xl font-black text-center tracking-tight leading-tight text-slate-900 dark:text-white">
               {data.headline || "Need a website like this?"}
             </h1>
             <p className="mb-12 text-xl text-slate-600 dark:text-slate-400 text-center max-w-lg mx-auto">{data.subheadline || "Contact us for a discovery session."}</p>
             <div className="flex gap-6">
-               <button onClick={onNext} className="group relative flex items-center gap-3 px-10 py-5 bg-primary text-white rounded-full font-bold text-lg shadow-lg shadow-primary/30 active:scale-95 transition-all">
+               <a href="/contact" className="group relative whitespace-nowrap flex items-center gap-3 px-10 py-5 bg-primary text-white rounded-full font-bold text-lg shadow-[0_10px_30px_-10px_rgba(89,13,242,0.5)] hover:scale-105 active:scale-95 transition-all">
                  Get Started
                  <ArrowForward className="group-hover:translate-x-1 transition-transform" />
-               </button>
+               </a>
             </div>
          </div>
        </SharedSlideShell>
